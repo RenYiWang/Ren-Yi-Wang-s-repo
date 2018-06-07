@@ -2,14 +2,12 @@
 title: "Analysis of HCMV's Origin of Replication"
 author: "Ren Yi Wang"
 date: "March 17, 2018"
-output:
-  html_document: default
-  word_document: default
+output: github_document
 ---
 <font size = 4>
 
 ```{r, echo=FALSE, comment=NA}
-hcmv <- read.csv("C:/Users/user/Desktop/Stat 135/Lab02/hcmv.data")
+hcmv <- read.csv("C:/Users/user/Desktop/Stat 135/Stat 135 lab/Lab02/hcmv.data")
 ```
 
 #### Introduction

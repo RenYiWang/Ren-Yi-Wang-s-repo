@@ -2,7 +2,7 @@
 title: "Stat 135 lab 03"
 author: "Ren Yi Wang"
 date: "April 23, 2018"
-output: html_document
+output: github_document
 ---
 
 <font size = 4>

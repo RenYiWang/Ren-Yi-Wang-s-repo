@@ -1,14 +1,14 @@
----
-title: "Stat135_lab_1"
-author: "Ren Yi Wang"
-date: "February 10, 2018"
-output: github_document
----
+Stat135\_lab\_1
+================
+Ren Yi Wang
+February 10, 2018
+
 <font size = "5">
 
-## Part 1 a
+Part 1 a
+--------
 
-```{r}
+``` r
 load("/Users/user/Desktop/Stat 135/Stat 135 lab/Lab01/KaiserBabies.rda")
 set.seed(7)
 
@@ -24,11 +24,12 @@ lowerBound <- sampleAverage-1.96*estimatedSE
 upperBound <- sampleAverage+1.96*estimatedSE
 ```
 
-My sample average is `r sampleAverage`, and my estimated SE is `r estimatedSE`. The 95% confidence interval is (`r lowerBound`, `r upperBound`), under the assumption that normality works.
+My sample average is 134.7, and my estimated SE is 4.8921697. The 95% confidence interval is (125.1113474, 144.2886526), under the assumption that normality works.
 
-## Part 1 b
+Part 1 b
+--------
 
-```{r}
+``` r
 # Sample 1000 times
 sampleVec <- matrix(0, 1, 1000)
 record <- matrix(0, 2, 1000)
@@ -56,22 +57,31 @@ for (k in 1:1000)
 }
 ```
 
-I expect 950 inervals to cover the true population average, and `r coverNumber` of my confidence intervals cover true popultion average.
+I expect 950 inervals to cover the true population average, and 885 of my confidence intervals cover true popultion average.
 
-## Part 1 c
+Part 1 c
+--------
 
-```{r}
+``` r
 sampleSD <- sd(sampleVec)
 hist(sampleVec, breaks = 50)
+```
+
+![](Stat135_Lab_1_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+``` r
 qqnorm(sampleVec)
 qqline(sampleVec, col = "red", lwd = 2)
 ```
 
-The SD of sample average is `r sampleSD`, and it is not quite similar to my estimated SE in part a. From my qqplot, sample average is close to the red line, and thus it is close to a normal distribution. Since sample average is close to normal distribution, the confidence interval is valid.
+![](Stat135_Lab_1_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
-## Part 2 a
+The SD of sample average is 6.7403715, and it is not quite similar to my estimated SE in part a. From my qqplot, sample average is close to the red line, and thus it is close to a normal distribution. Since sample average is close to normal distribution, the confidence interval is valid.
 
-```{r}
+Part 2 a
+--------
+
+``` r
 # Bootstrap function
 bootStrap = function(mySample, popSize = 1236, B = 1000, replace =
               FALSE)
@@ -91,24 +101,31 @@ bootStrap = function(mySample, popSize = 1236, B = 1000, replace =
 bootSampAvgs <- bootStrap(mySample)$bootSamps
 hist(bootSampAvgs, breaks = 50)
 abline(v = mean(bootStrap(mySample)[[1]]),col = "red", lwd = 2)
+```
+
+![](Stat135_Lab_1_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+``` r
 bootSD <- sd(bootSampAvgs)
 ```
 
-The SD of sample average is `r bootSD`, and it is close to the estimated SE in part 1 a.
+The SD of sample average is 4.7129897, and it is close to the estimated SE in part 1 a.
 
-## Part 2 b
+Part 2 b
+--------
 
-```{r}
+``` r
 # Contruct 95% confidence interval
 bootLowerBound <- unname(quantile(bootSampAvgs, 0.025))
 bootUpperBound <- unname(quantile(bootSampAvgs, 0.975))
 ```
 
-My 95% confidence interval is (`r bootLowerBound`, `r bootUpperBound`), and it is close to the confidence interval I have in part 1 a.
+My 95% confidence interval is (125.2975, 143.5025), and it is close to the confidence interval I have in part 1 a.
 
-## Part 3.1.a
+Part 3.1.a
+----------
 
-```{r}
+``` r
 set.seed(7)
 
 n1 <- 100
@@ -122,11 +139,12 @@ lowerBound1 <- sampleAverage1-1.96*estimatedSE1
 upperBound1 <- sampleAverage1+1.96*estimatedSE1
 ```
 
-My sample average is `r sampleAverage1`, and my estimated SE is `r estimatedSE1`. The 95% confidence interval is (`r lowerBound1`, `r upperBound1`).
+My sample average is 129.78, and my estimated SE is 1.9715842. The 95% confidence interval is (125.9156949, 133.6443051).
 
-## Part 3.1.b
+Part 3.1.b
+----------
 
-```{r}
+``` r
 # Sample 1000 times
 sampleVec1 <- matrix(0, 1, 1000)
 record1 <- matrix(0, 2, 1000)
@@ -151,37 +169,51 @@ for (k in 1:1000)
 }
 ```
 
-I expect 950 inervals to cover the true population average. `r coverNumber1` of my confidence intervals cover true popultion average.
+I expect 950 inervals to cover the true population average. 949 of my confidence intervals cover true popultion average.
 
-## Part 3.1.c
+Part 3.1.c
+----------
 
-```{r}
+``` r
 sampleSD1 <- sd(sampleVec1)
 hist(sampleVec1, breaks = 50)
+```
+
+![](Stat135_Lab_1_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+``` r
 qqnorm(sampleVec1)
 qqline(sampleVec1, col = "red", lwd = 2)
 ```
 
-The SD of sample average is `r sampleSD1`, and it is quite similar to my estimated SE in part a. From my qqplot, sample average is close to the red line, and thus it is close to a normal distribution. Since sample average is close to normal distribution, the confidence interval is valid.
+![](Stat135_Lab_1_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
-## Part 3.2.a
+The SD of sample average is 2.000529, and it is quite similar to my estimated SE in part a. From my qqplot, sample average is close to the red line, and thus it is close to a normal distribution. Since sample average is close to normal distribution, the confidence interval is valid.
 
-```{r}
+Part 3.2.a
+----------
+
+``` r
 bootSampAvgs1 <- bootStrap(mySample1)$bootSamps
 hist(bootSampAvgs1, breaks = 50)
 abline(v = mean(bootStrap(mySample1)[[1]]),col = "red", lwd = 2)
+```
+
+![](Stat135_Lab_1_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+``` r
 bootSD1 <- sd(bootSampAvgs1)
 ```
 
-The SD of sample average is `r bootSD1`, and it is close to the estimated SE in part 3.1.a.
+The SD of sample average is 1.9517933, and it is close to the estimated SE in part 3.1.a.
 
-## Part 3.2.b
+Part 3.2.b
+----------
 
-```{r}
+``` r
 # Contruct 95% confidence interval
 bootLowerBound1 <- unname(quantile(bootSampAvgs1, 0.025))
 bootUpperBound1 <- unname(quantile(bootSampAvgs1, 0.975))
 ```
 
-My 95% confidence interval is (`r bootLowerBound1`, `r bootUpperBound1`), and it is close to the confidence interval I have in part 3.1.a.
-
+My 95% confidence interval is (125.88975, 133.67025), and it is close to the confidence interval I have in part 3.1.a.
