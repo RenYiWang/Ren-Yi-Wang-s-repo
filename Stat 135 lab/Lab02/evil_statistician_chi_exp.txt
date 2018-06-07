@@ -1,0 +1,27 @@
+```{r, echo=FALSE, comment=NA, include=FALSE}
+# chi_square test, yield undesired result, abandon this plan
+exp_obs_count <- rep(0,12)
+exp_exp_count <- rep(0,12)
+
+for (i in 1:12) {
+  for (j in 1:length(spacing)) {
+    if (spacing[j] <= 400*i & spacing[j] >= 400*(i-1)+1) {
+      exp_obs_count[i] = exp_obs_count[i] + 1
+    }
+  }
+}
+
+for (i in 1:12) {
+  if (i <= 11) {
+    exp_exp_count[i] = 296*(exp(-exp_rate*(400*(i-1)+1)) - exp(-exp_rate*400*i))
+  } else {
+    exp_exp_count[i] = 296*(exp(-exp_rate*(400*(i-1)+1)))
+  }
+}
+
+exp_table <- data.frame('Observed counts' = exp_obs_count, 'Expected counts' = exp_exp_count)
+exp_table
+
+exp_diff_vec <- ((exp_table$Observed.counts - exp_table$Expected.counts)^2)/exp_table$Expected.counts
+exp_test_stat <- sum(exp_diff_vec)
+```
