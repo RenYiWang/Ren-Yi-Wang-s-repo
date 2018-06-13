@@ -1,0 +1,75 @@
+---
+title: "README"
+author: "Ren Yi Wang"
+date: "April 27, 2018"
+output: github_document
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+
+## Overview
+
+`"dieroller"` is a minimal [R](http://www.r-project.org/) package 
+that provides functions to simulate rolling a die.
+
+* `die()` creates a coin object (of class `"die"`)
+* `roll()` tosses a coin object, producing a `"roll"` object.
+* `plot()` method for a `"roll"` object to plot frequencies of heads.
+* `summary()` method for a `"roll"` object.
+
+
+## Motivation
+
+This package has been developed to illustrate some of the concepts
+behind the creation of an R package.
+
+
+## Installation
+
+Install the development version from GitHub via the package `"devtools"`:
+
+```r
+# development version from GitHub:
+#install.packages("devtools") 
+
+# install "cointoss" (without vignettes)
+devtools::install_github("gastonstat/cointoss")
+
+# install "cointoss" (with vignettes)
+devtools::install_github("gastonstat/cointoss", build_vignettes = TRUE)
+```
+
+
+## Usage
+
+```{r}
+library(dieroller)
+
+# default die
+fair_die <- die()
+fair_die
+
+# 1 roll of fair_die
+roll(fair_die, 1)
+
+# 10 rolls of fair_die
+roll10 <- roll(fair_die, times = 10)
+roll10
+
+# summary
+summary(roll10)
+
+
+# 100 rolls
+roll100 <- roll(fair_die, times = 100)
+
+# summary
+summary(roll100)
+```

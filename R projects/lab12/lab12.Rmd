@@ -1,0 +1,153 @@
+---
+title: "lab12"
+author: "Ren Yi Wang"
+date: "April 23, 2018"
+output: html_document
+---
+
+```{r}
+library(XML)
+library(xml2)
+library(rvest)
+library(magrittr)
+
+# Assemble url (so it fits on screen)
+basket <- "https://www.basketball-reference.com"
+gsw <- "/teams/GSW/2017.html"
+gsw_url <- paste0(basket, gsw)
+
+# download HTML file to your working directory
+download.file(gsw_url, 'gsw-roster-2017.html')
+
+# Read GSW Roster html table
+gsw_roster <- readHTMLTable('gsw-roster-2017.html')
+
+# Assemble url (so it fits on screen)
+basket <- "https://www.basketball-reference.com"
+bos <- "/teams/BOS/2017.html"
+bos_url <- paste0(basket, bos)
+
+# download HTML file to your working directory
+download.file(bos_url, 'bos-roster-2017.html')
+
+# Read BOS Roster html table
+bos_roster <- readHTMLTable('bos-roster-2017.html')
+
+nba_html <- paste0(basket, '/leagues/NBA_2017.html')
+
+xml_doc <- read_html(nba_html)
+
+xml_text <- xml_doc %>% html_text()
+
+xml_doc %>%
+  html_nodes('h2') %>%
+  html_text
+```
+
+## Your turn
+
+```{r}
+xml_doc %>%
+  html_nodes('h1') %>%
+  html_text
+
+xml_doc %>%
+  html_nodes('strong') %>%
+  html_text()
+
+xml_doc %>%
+  html_nodes('button') %>%
+  html_text
+```
+
+
+```{r}
+# node with an attribute
+xml_doc %>%
+  html_nodes("p.listhead") %>%
+  html_text()
+
+xml_doc %>%
+  html_nodes(xpath = '//p[@class="listhead"]') %>%
+  html_text()
+
+xml_doc %>%
+  html_nodes(xpath = '//ul[@class=""]/li/a') %>%
+  html_text()
+
+xml_doc %>%
+  html_nodes(xpath = '//ul[@class=""]//a') %>%
+  html_text()
+```
+
+```{r}
+# extracting first table 
+xml_table1 <- xml_doc %>%
+  html_nodes("table") %>%
+  extract(1)
+
+class(xml_table1)
+
+tbl1 <- html_table(xml_table1)
+
+head(tbl1)
+
+# extracting second table 
+xml_table2 <- xml_doc %>%
+  html_nodes("table") %>%
+  extract(2)
+
+# two html tables
+xml_tables <- xml_doc %>%
+  html_nodes("table") %>%
+  extract(1:2)
+
+# extract names of teams
+xml_tables %>% 
+  html_nodes("a") %>%
+  html_text()
+
+# href attributes
+xml_tables %>% 
+  html_nodes("a") %>%
+  html_attr("href")
+```
+
+## Your turn
+
+```{r}
+library(stringr)
+
+hrefs <- xml_tables %>%
+  html_nodes('a') %>%
+  html_attr('href')
+
+teams <- str_sub(hrefs, 8, 10)
+
+files <- paste0(teams, '-roster-2017.csv')
+
+team_url <- paste0(basket, hrefs[1])
+
+roster <- read_html(team_url) %>%
+  html_nodes('table') %>%
+  html_table()
+
+write.csv(roster[[1]], files[[1]])
+
+for( i in 1:length(teams)) {
+  team_url <- paste0(basket, hrefs[i])
+  roster <- read_html(team_url) %>%
+    html_nodes('table') %>%
+    html_table()
+  write.csv(roster[[1]], files[[i]])
+}
+```
+
+
+
+
+
+
+
+
+

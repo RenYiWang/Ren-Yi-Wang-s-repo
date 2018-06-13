@@ -1,0 +1,109 @@
+---
+title: "HW 02 - Shot Chart"
+author: "Ren-Yi Wang"
+date: "March 6, 2018"
+output: github_document
+---
+```{r}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../images/.')
+source('../code/make-shots-data-script.R')
+```
+
+## 5) Summary Tables
+
+```{r}
+library(dplyr)
+
+# 5.1) Total Shots by Player
+total <- gsw %>%
+  group_by(name) %>%
+  summarise(total = n()) %>%
+  arrange(desc(total))
+
+total
+
+# 5.2) Effective Shooting Percentage
+# Effective Shooting % by Player
+effective_shooting <- gsw %>%
+  select(name, shot_made_flag) %>%
+  group_by(name) %>%
+  summarise(total = n(), made = sum(shot_made_flag == 'made shot')) %>%
+  mutate(perc_made = made/total) %>%
+  arrange(desc(perc_made))
+
+effective_shooting
+
+# 2PT Effective Shooting % by Player
+two_pt_effective_shooting <- gsw %>% 
+  filter(shot_type == '2PT Field Goal') %>%
+  group_by(name) %>%
+  summarise(total = n(), made = sum(shot_made_flag == 'made shot')) %>%
+  mutate(perc_made = made / total) %>%
+  arrange(desc(perc_made))
+
+two_pt_effective_shooting
+
+# 3PT Effective Shooting % by Player
+three_pt_effective_shooting <- gsw %>% 
+  filter(shot_type == '3PT Field Goal') %>%
+  group_by(name) %>%
+  summarise(total = n(), made = sum(shot_made_flag == 'made shot')) %>%
+  mutate(perc_made = made / total) %>%
+  arrange(desc(perc_made))
+
+three_pt_effective_shooting
+```
+
+## 6) Shooting Distance
+
+```{r}
+# 6.1) dplyr table
+prop_shot <- gsw %>%
+  group_by(shot_distance) %>%
+  summarise(total = n(), made = sum(shot_made_flag == 'made shot')) %>%
+  mutate(made_shot_prop = made/total) %>%
+  select(shot_distance, made_shot_prop) %>%
+  arrange(shot_distance)
+
+prop_shot
+
+# 6.2) ggplot
+# scatterplot with the variables shot_distance and made_shot_prop
+library(ggplot2)
+
+ggplot(data = prop_shot, aes(x = shot_distance, y = made_shot_prop)) +
+  geom_point()
+```
+
+Observation: Players tend to have high accuracy when the shot distance is short. From the graph, I observe that when the players have accuracy greater than 50 percent when they are very close to the hoop. However, when the distance is from 3 to 30 feet, the accuracy is at the level around 37.5 percent. When the distance is too far, the accuracy is zero percent. Generally, the shorter the distance, the more effective the shot, but this is not definite since the data points in the plot is not stricly decreasing. The estimate of distance threshold is 34 feet, meaning the accuracy is basically null if the player is shooting from a distance more than 34 feet. The distances that have a percentage of 50 percent or more are 0, 1, 2, 13, 16, 18, 21, and 30 feet.
+
+## 7) Total number of shots by minute of occurrence
+
+```{r}
+min_occurrence <- gsw %>%
+  select(name, shot_made_flag, minute) %>% 
+  group_by(name, minute)%>% 
+  summarise(total_number_shots = n())
+
+min_occurrence
+
+ggplot(min_occurrence, aes(x = minute,y = total_number_shots)) +
+  geom_point(color = "blue") +
+  facet_wrap(~ name) +
+  geom_path(color = "blue") +
+  scale_x_continuous(name = "minute", breaks = c(1, 12, 24, 36, 48)) +
+  geom_rect(fill = "grey",alpha = 0.01,xmin = 1,xmax = 12,ymin = 0,ymax = 60) +
+  geom_rect(fill = "grey",alpha = 0.01,xmin = 24,xmax = 36,ymin = 0,ymax = 60) +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+Package: dieroller
+Type: Package
+Title: Generate die and data for rolls. Summary and plot functions for rolls.
+Version: 0.1.0
+Author: Ren Yi Wang
+Maintainer: The package maintainer <11lelouch@berkeley.edu>
+Description: Functions to generate a valid die, to roll a die multiple times, and
+    to summarize and visualize frequencies of sides.
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1

@@ -1,0 +1,306 @@
+---
+title: "hw05-Renyi-Wang"
+author: "Ren Yi Wang"
+date: "April 21, 2018"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+## 1) Object "die"
+
+```{r}
+# aux function checking sides
+check_sides <- function(sides) {
+  if (length(sides) != 6) {
+    stop('\n sides must be of length 6')
+  }
+  return(TRUE)
+}
+
+# aux function checking probabilities
+check_prob <- function(prob) {
+  if (length(prob) != 6 | is.numeric(prob) == FALSE) {
+    stop('\n prob must be a numeric vector of length 6')
+  }
+  
+  if (any(prob < 0) | any(prob > 1)) {
+    stop('\n prob must be between 0 and 1, inclusive')
+  }
+  
+  if (sum(prob) != 1) {
+    stop('\n elements in prob must add up to 1')
+  }
+  
+  return(TRUE)
+}
+
+# class constructor function for die
+die <- function(sides = 1:6, prob = rep(1/6, 6)) {
+  check_sides(sides)
+  check_prob(prob)
+  
+  object = list('sides' = sides, 'prob' = prob)
+  class(object) <- 'die'
+  
+  return(object)
+}
+
+# print method for object of class "toss"
+print.die <- function(object) {
+  object <- data.frame('sides' = object$sides,
+                       'prob' = object$prob,
+                       stringAsFactors = FALSE)
+  cat('object "die"', '\n\n')
+  print(object)
+  invisible(object)
+}
+
+
+# default call: creates a standard fair die
+fair_die <- die()
+fair_die
+
+# die with non-standard sides
+weird_die <- die(sides = c('i', 'ii', 'iii', 'iv', 'v', 'vi'))
+weird_die
+
+# create a loaded die
+loaded_die <- die(prob = c(0.075, 0.1, 0.125, 0.15, 0.20, 0.35))
+loaded_die
+
+# bad sides
+bad_die <- die(sides = c('a', 'b', 'c', 'd', 'e'))
+
+# bad prob
+bad_die <- die(
+sides = c('a', 'b', 'c', 'd', 'e', 'f'),
+prob = c(0.2, 0.1, 0.1, 0.1, 0.5, 0.1))
+```
+
+## 2) Object "roll"
+
+```{r}
+# aux function checking times
+check_times <- function(times) {
+  if (times%%1 != 0 | times <= 0)
+    stop('\n times must be a positive integer')
+  return(TRUE)
+}
+
+roll <- function(x, ...) UseMethod("roll")
+roll.die <- function(die, times = 1) {
+  check_times(times)
+  rolls <- sample(die$sides, size = times, replace = TRUE, prob = die$prob)
+  rolls <- list('rolls' = rolls,
+                'sides' = die$sides,
+                'prob' = die$prob,
+                'total' = times)
+  class(rolls) <- 'roll'
+  return(rolls)
+}
+
+print.roll <- function(rolls) {
+  rolls <- data.frame('rolls' = rolls$rolls, stringsAsFactors = FALSE)
+  cat('object "roll"', '\n\n')
+  cat('$rolls', '\n')
+  print(rolls$rolls)
+  invisible(rolls)
+}
+
+# roll fair die 50 times
+fair_die <- die()
+set.seed(123)
+fair50 <- roll(fair_die, times = 50)
+fair50
+
+# what's in fair50?
+names(fair50)
+fair50$rolls
+fair50$sides
+fair50$prob
+fair50$total
+
+# string die
+str_die <- die(sides = c('a', 'b', 'c', 'd', 'e', 'f'),
+               prob = c(0.075, 0.1, 0.125, 0.15, 0.20, 0.35))
+
+# roll 20 times
+set.seed(123)
+str_rolls <- roll(str_die, times = 20)
+names(str_rolls)
+str_rolls
+```
+
+## 3) Summary method for "roll" objects
+
+```{r}
+# summary function for class roll
+summary.roll <- function(rolls) {
+  roll_table_df <- data.frame(table(rolls$rolls), stringsAsFactors = FALSE)
+  roll_count <- roll_table_df$Freq
+  roll_prop <- roll_count/rolls$total
+  roll_df <- data.frame('freqs' = c(as.character(rolls$sides),
+                                    as.character(roll_count),
+                                    as.character(roll_prop)),
+                        stringsAsFactors = FALSE)
+  class(roll_df) <- 'summary.roll'
+  return(roll_df)
+}
+
+# print method for roll summary
+print.summary.roll <- function(df) {
+  df_len <- length(df$freqs)
+  df <- data.frame('side' = df$freqs[1:(df_len/3)],
+                   'count' = df$freqs[((df_len/3)+1):((2*df_len)/3)],
+                   'prop'= df$freqs[((2*df_len/3)+1):df_len])
+  cat('summary "roll"', '\n\n')
+  print(df)
+  invisible(df)
+}
+
+set.seed(123)
+fair_50rolls <- roll(fair_die, times = 50)
+fair50_sum <- summary(fair_50rolls)
+fair50_sum
+
+# what's in the summary
+class(fair50_sum)
+names(fair50_sum)
+```
+
+## 4) Plot methd for "roll" objects
+
+```{r}
+# plot method
+plot.roll <- function(rolls) {
+  barplot(table(rolls$rolls)/rolls$total, xlab = 'side of die', ylab = 'relative frequencies', border = NA)
+}
+
+
+# plot method
+plot(fair_50rolls)
+```
+
+## 5) Additional Methods
+
+```{r}
+# extraction method "[" to extract the value of a given roll
+'[.roll' <- function(rolls, i) {
+  return(rolls$rolls[i])
+}
+
+# replacement method "[<-" to replace the value of a given roll
+'[<-.roll' <- function(rolls, i, value) {
+  if (i < 1 | i > rolls$total) {
+    stop('\n index out of bounds')
+  }
+  
+  if (value %in% rolls$sides == FALSE) {
+    stop('\n invalid replacing value')
+  }
+  
+  rolls$rolls[i] <- value
+  new_rolls <- list('rolls' = rolls$rolls,
+                'sides' = rolls$sides,
+                'prob' = rolls$prob,
+                'total' = rolls$total)
+  class(new_rolls) <- 'roll'
+  return(new_rolls)
+}
+
+# addition method
+'+.roll' <- function(rolls, increment) {
+  if (length(increment) != 1 | increment <= 0 | increment%%1 != 0) {
+    stop('\n increment must be a positive integer')
+  }
+  
+  origin_sides <- rolls$sides
+  origin_rolls <- rolls$rolls
+  origin_prob <- rolls$prob
+  origin_total <- rolls$total
+  
+  origin_die <- list('sides' = origin_sides, 'prob' = origin_prob)
+  class(origin_die) <- 'die'
+  
+  add_rolls <- roll(origin_die, times = increment)
+
+  new_rolls <- list('rolls' = c(origin_rolls, add_rolls$rolls),
+                    'sides' = rolls$sides,
+                    'prob' = rolls$prob,
+                    'total' = origin_total + increment)
+  class(new_rolls) <- 'roll'
+  return(new_rolls)
+}
+
+# roll fair die
+set.seed(123)
+fair_die <- die()
+fair500 <- roll(fair_die, times = 500)
+# summary method
+summary(fair500)
+
+# extracting roll in position 500
+fair500[500]
+
+# replacing last roll
+fair500[500] <- 1
+fair500[500]
+summary(fair500)
+
+# adding 100 rolls
+fair600 <- fair500 + 100
+summary(fair600)
+
+# plot method
+plot(fair500)
+```
+
+## De Mere's Problem
+
+#### Problem 1
+
+```{r}
+library(dieroller)
+
+
+count <- 0
+fair_die <- die()
+for (i in 1:1000) {
+  single_roll <- roll(fair_die, 4)$rolls
+  if(any(single_roll == 6)) {
+    count <- count + 1
+  }
+}
+prob <- count/1000
+prob
+```
+
+#### Problem 2
+
+```{r}
+count <- 0
+die1 <- die()
+die2 <- die()
+
+for (i in 1:1000) {
+  roll1 <- roll(die1, 24)$rolls
+  roll2 <- roll(die2, 24)$rolls
+  combined_roll <- roll1 + roll2
+  
+  if (any(combined_roll == 12)) {
+    count <- count + 1
+  }
+}
+
+prob <- count/1000
+prob
+```
+
+
+
+
+
+

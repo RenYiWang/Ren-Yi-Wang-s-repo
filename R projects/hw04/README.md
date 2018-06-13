@@ -1,0 +1,1 @@
+HW04 description: The main underlying purpose of this assignment is to work with strings. More especifically, in this homework, we will practice with some basic/intermediate manipulations of strings and regular expressions.
